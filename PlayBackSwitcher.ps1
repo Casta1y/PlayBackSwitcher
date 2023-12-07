@@ -1,12 +1,14 @@
 # Get the current default device
 $currentDefaultDevice = (Get-AudioDevice -List | Where-Object {$_.Default -eq $True -and $_.Type -eq "Playback"}).Name
+$currentDefaultDeviceIndex = (Get-AudioDevice -List | Where-Object {$_.Default -eq $True -and $_.Type -eq "Playback"}).Index
 # Get other non-default devices
-$otherDevices = (Get-AudioDevice -List | Where-Object {$_.Default -ne $True -and $_.Type -eq "Playback"}).Name
+$AllDevices = (Get-AudioDevice -List | Where-Object {$_.Type -eq "Playback"}).Name
+$AllDevicesID = (Get-AudioDevice -List | Where-Object {$_.Type -eq "Playback"}).ID
 
 # Check if there are other devices
-if ($otherDevices.Count -ge 1) {
+if ($AllDevicesID.Count -ge 2) {
     # Switch to next device
-    Set-AudioDevice -ID $($otherDevices[0])
+    Set-AudioDevice -ID $($AllDevicesID[$currentDefaultDeviceIndex % $AllDevices.Count])
 }
 else {
     Write-Host "Not enough audio devices to switch to"
